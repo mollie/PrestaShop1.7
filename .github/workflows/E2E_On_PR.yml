@@ -29,7 +29,7 @@ jobs:
             subdomain: 'demoshop8'
             port: '8002'
             yml: 'docker-compose.8.yml'
-            url: 'https://demoshop8.ngrok.io'
+            url: 'https://demoshop8debug.ngrok.io'
             test_spec: '**/cypress/e2e/ps8/**'
             TestRailID: R6470
     env:
