@@ -249,4 +249,17 @@ it('C3006615: Bancomat Checkouting [Payments API]', () => {
 it('C3006616: Bancomat BO Refunding, Partial Refunding [Payments API]', () => {
   cy.OrderRefundingPartialPaymentsAPI()
 })
+it('C3006826: Alma Checkouting [Payments API]', () => {
+  cy.navigatingToThePaymentPS8()
+  //Payment method choosing
+  cy.contains('Alma').click({force:true})
+  cy.get('.condition-label > .js-terms').click({force:true})
+  cy.contains('Place order').click()
+  cy.get('[value="paid"]').click()
+  cy.get('[class="button form__button"]').click()
+  cy.get('#content-hook_order_confirmation > .card-block').should('be.visible')
+});
+it('C3006827: Alma BO Refunding, Partial Refunding [Payments API]', () => {
+  cy.OrderRefundingPartialPaymentsAPI()
+})
 })
