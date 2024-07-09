@@ -14,15 +14,15 @@ declare(strict_types=1);
 
 namespace Mollie\ServiceProvider;
 
+use Interop\Container\ContainerInterface as InteropContainerInterface;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
-use Psr\Container\ContainerInterface as PsrContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class PrestashopContainer implements PsrContainerInterface
+class PrestashopContainer implements InteropContainerInterface
 {
     /** @var SymfonyContainer|ContainerInterface|null */
     private $container;
