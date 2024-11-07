@@ -1,6 +1,12 @@
 name: Tests
 
-on: [ pull_request ]
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - 'master'
 
 jobs:
   php-cs-fixer:
@@ -62,3 +68,33 @@ jobs:
 
       - name: Run PHPStan
         run: docker run --rm --volumes-from temp-ps -v $PWD:/web/module -e _PS_ROOT_DIR_=/var/www/html --workdir=/web/module phpstan/phpstan:0.12 analyse --configuration=/web/module/tests/phpstan/phpstan_base.neon --debug --error-format github
+
+  prepare-zip:
+    name: Prepare module ZIP artifact
+    runs-on: ubuntu-latest
+    needs: [ test ]
+    env:
+      MODULE_NAME: mollie
+    steps:
+      # todo ask for permissions to add cancel previous workflow action
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build module ZIP
+        run: |
+          composer install --no-dev --optimize-autoloader --classmap-authoritative
+          composer dump-autoload --no-dev --optimize --classmap-authoritative
+          rm -rf .git .github tests .php-cs-fixer.php Makefile cypress* docker-compose*.yml package.json package-lock.json .docker
+          mkdir ${{ env.MODULE_NAME }}
+          rsync -Rr ./ ./${{ env.MODULE_NAME }}
+          shopt -s extglob
+          rm -r !(${{ env.MODULE_NAME }})
+          find . -maxdepth 1 -type f -exec rm "{}" \;
+          cd ${{ env.MODULE_NAME }} && rm -rf ${{ env.MODULE_NAME }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.MODULE_NAME }}
+          path: ./
