@@ -156,7 +156,7 @@ final class DatabaseTableInstaller implements InstallerInterface
                 `id_method` VARCHAR(64) NOT NULL,
                 `id_lang` INT(11),
                 `id_shop` INT(11),
-                `text` TINYTEXT,
+                `text` VARCHAR(64), 
                 INDEX (`id_method`)
             ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 

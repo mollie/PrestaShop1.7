@@ -188,6 +188,11 @@ final class BaseServiceProvider
         $service = $this->addService($container, MolCustomerRepository::class, MolCustomerRepository::class);
         $this->addServiceArgument($service, 'MolCustomer');
 
+        $this->addService($container, PaymentMethodLangRepositoryInterface::class, $container->get(PaymentMethodLangRepository::class));
+
+        $service = $this->addService($container, PaymentMethodLangRepository::class, PaymentMethodLangRepository::class);
+        $this->addServiceArgument($service, 'MolPaymentMethodLang');
+
         $this->addService($container, UninstallerInterface::class, $container->get(Mollie\Install\DatabaseTableUninstaller::class));
 
         $service = $this->addService($container, InstallerInterface::class, Installer::class);
@@ -217,7 +222,6 @@ final class BaseServiceProvider
         $this->addService($container, TaxRuleRepositoryInterface::class, $container->get(TaxRuleRepository::class));
         $this->addService($container, TaxRepositoryInterface::class, $container->get(TaxRepository::class));
         $this->addService($container, CartRepositoryInterface::class, $container->get(CartRepository::class));
-        $this->addService($container, PaymentMethodLangRepositoryInterface::class, $container->get(PaymentMethodLangRepository::class));
 
         $this->addService($container, OrderTotalProviderInterface::class, $container->get(OrderTotalProvider::class));
         $this->addService($container, PaymentFeeProviderInterface::class, $container->get(PaymentFeeProvider::class));

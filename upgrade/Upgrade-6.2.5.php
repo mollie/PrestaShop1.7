@@ -16,12 +16,12 @@ if (!defined('_PS_VERSION_')) {
 function upgrade_module_6_2_5(Mollie $module): bool
 {
     $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'mol_payment_method_lang` (
-                `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                `id_method` TINYTEXT,
-                `id_lang` INT(11),
-                `id_shop` INT(11),
-                `text` VARCHAR(64) NOT NULL,
-                INDEX (`id_method`)
+            `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `id_method` VARCHAR(64),
+            `id_lang` INT(11),
+            `id_shop` INT(11),
+            `text` VARCHAR(64) NOT NULL,
+            INDEX (`id_method`)
         ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
     $result = Db::getInstance()->execute($sql);

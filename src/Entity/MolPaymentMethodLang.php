@@ -58,7 +58,7 @@ class MolPaymentMethodLang extends ObjectModel
             'text' => [
                 'type' => self::TYPE_STRING,
                 'validate' => 'isString',
-                'size' => 255,
+                'size' => 64,
             ],
         ],
     ];
