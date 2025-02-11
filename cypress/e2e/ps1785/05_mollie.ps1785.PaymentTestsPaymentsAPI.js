@@ -279,4 +279,17 @@ it('TWINT Checkouting [Payments API]', () => {
 it('TWINT Order Shipping, Refunding [Payments API]', () => {
     cy.OrderRefundingPartialPaymentsAPI()
 })
+it('C3006827: Alma Checkouting [Payments API]', () => {
+  cy.navigatingToThePaymentPS8()
+  //Payment method choosing
+  cy.contains('Alma').click({force:true})
+  cy.get('.condition-label > .js-terms').click({force:true})
+  cy.contains('Place order').click()
+  cy.get('[value="paid"]').click()
+  cy.get('[class="button form__button"]').click()
+  cy.get('#content-hook_order_confirmation > .card-block').should('be.visible')
+});
+it('C3006826: Alma BO Refunding, Partial Refunding [Payments API]', () => {
+  cy.OrderRefundingPartialPaymentsAPI()
+})
 })

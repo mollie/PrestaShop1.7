@@ -330,4 +330,22 @@ it('C3006613: Bancomat Checkouting [Orders API]', () => {
 it('C3006614: Bancomat Order Shipping, Refunding [Orders API]', () => {
   cy.OrderShippingRefundingOrdersAPI()
 })
+it('C3006826: Alma Checkouting [Orders API]', () => {
+  cy.visit('/en/order-history')
+  cy.contains('Reorder').click()
+  cy.contains('DE').click({force:true})
+  //Billing country LT, DE etc.
+  cy.get('.clearfix > .btn').click()
+  cy.get('#js-delivery > .continue').click()
+  //Payment method choosing
+  cy.contains('Alma').click({force:true})
+  cy.get('.condition-label > .js-terms').click({force:true})
+  cy.contains('Place order').click()
+  cy.get('[value="paid"]').click()
+  cy.get('[class="button form__button"]').click()
+  cy.get('#content-hook_order_confirmation > .card-block').should('be.visible')
+});
+it('C3006827: Alma Order Shipping, Refunding [Orders API]', () => {
+  cy.OrderShippingRefundingOrdersAPI()
+})
 })
