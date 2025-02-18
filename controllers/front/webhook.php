@@ -50,56 +50,62 @@ class MollieWebhookModuleFrontController extends AbstractMollieController
 
     public function initContent(): void
     {
+        $transactionId = null;
+
         /** @var Logger $logger * */
         $logger = $this->module->getService(LoggerInterface::class);
 
-        $logger->debug(sprintf('%s - Controller called', self::FILE_NAME));
+        try {
+            $logger->debug(sprintf('%s - Controller called', self::FILE_NAME));
 
-        /** @var ToolsAdapter $tools */
-        $tools = $this->module->getService(ToolsAdapter::class);
+            /** @var ToolsAdapter $tools */
+            $tools = $this->module->getService(ToolsAdapter::class);
 
-        if (!$this->module->getApiClient()) {
-            $logger->error(sprintf('Unauthorized in %s', self::FILE_NAME));
+            if (!$this->module->getApiClient()) {
+                $logger->error(sprintf('Unauthorized in %s', self::FILE_NAME));
 
-            $this->ajaxResponse(JsonResponse::error(
-                $this->module->l('Unauthorized', self::FILE_NAME),
-                HttpStatusCode::HTTP_UNAUTHORIZED
+                $this->ajaxResponse(JsonResponse::error(
+                    $this->module->l('Unauthorized', self::FILE_NAME),
+                    HttpStatusCode::HTTP_UNAUTHORIZED
+                ));
+            }
+
+            if (!$tools->getValue('security_token')) {
+                $logger->debug(sprintf('%s - Missing security token', self::FILE_NAME));
+
+                $this->ajaxResponse(JsonResponse::error(
+                    $this->module->l('Missing security token', self::FILE_NAME),
+                    HttpStatusCode::HTTP_BAD_REQUEST
+                ));
+            }
+
+            $transactionId = (string) $tools->getValue('id');
+
+            if (!$transactionId) {
+                $logger->error(sprintf('%s - Missing transaction ID', self::FILE_NAME));
+
+                $this->ajaxResponse(JsonResponse::error(
+                    $this->module->l('Missing transaction id', self::FILE_NAME),
+                    HttpStatusCode::HTTP_UNPROCESSABLE_ENTITY
+                ));
+            }
+
+            $lockResult = $this->applyLock(sprintf(
+                '%s-%s',
+                self::FILE_NAME,
+                $tools->getValue('security_token')
             ));
-        }
 
-        if (!$tools->getValue('security_token')) {
-            $logger->debug(sprintf('%s - Missing security token', self::FILE_NAME));
+            if (!$lockResult->isSuccessful()) {
+                $logger->error(sprintf('%s - Resource conflict', self::FILE_NAME));
 
-            $this->ajaxResponse(JsonResponse::error(
-                $this->module->l('Missing security token', self::FILE_NAME),
-                HttpStatusCode::HTTP_BAD_REQUEST
-            ));
-        }
-
-        $transactionId = (string) $tools->getValue('id');
-
-        if (!$transactionId) {
-            $logger->error(sprintf('%s - Missing transaction ID', self::FILE_NAME));
-
-            $this->ajaxResponse(JsonResponse::error(
-                $this->module->l('Missing transaction id', self::FILE_NAME),
-                HttpStatusCode::HTTP_UNPROCESSABLE_ENTITY
-            ));
-        }
-
-        $lockResult = $this->applyLock(sprintf(
-            '%s-%s',
-            self::FILE_NAME,
-            $tools->getValue('security_token')
-        ));
-
-        if (!$lockResult->isSuccessful()) {
-            $logger->error(sprintf('%s - Resource conflict', self::FILE_NAME));
-
-            $this->ajaxResponse(JsonResponse::error(
-                $this->module->l('Resource conflict', self::FILE_NAME),
-                HttpStatusCode::HTTP_CONFLICT
-            ));
+                $this->ajaxResponse(JsonResponse::error(
+                    $this->module->l('Resource conflict', self::FILE_NAME),
+                    HttpStatusCode::HTTP_CONFLICT
+                ));
+            }
+        } catch (\Throwable $exception) {
+            $this->handleException($exception, HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR, 'Unexpected error before webhook execution');
         }
 
         try {
@@ -172,7 +178,9 @@ class MollieWebhookModuleFrontController extends AbstractMollieController
         $errorHandler = $this->module->getService(ErrorHandler::class);
 
         $errorHandler->handle($exception, $httpStatusCode, false);
+
         $this->releaseLock();
+
         $this->ajaxResponse(JsonResponse::error(
             $this->module->l('Failed to handle webhook', self::FILE_NAME),
             $httpStatusCode
