@@ -34,7 +34,7 @@ final class SecondChanceAccessibilityChecker implements AccessibilityCheckerInte
     /**
      * {@inheritdoc}
      */
-    public function isGranted(array $record)
+    public function isGranted(array $record): bool
     {
         $molPayment = $this->paymentMethodRepository->getPaymentBy('cart_id', (int) \Cart::getCartIdByOrderId($record['id_order']));
 

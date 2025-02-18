@@ -12,6 +12,7 @@
 
 namespace Mollie\Adapter;
 
+use PrestaShop\PrestaShop\Core\Localization\Locale;
 use Tools;
 
 if (!defined('_PS_VERSION_')) {

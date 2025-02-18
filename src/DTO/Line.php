@@ -338,7 +338,7 @@ class Line implements JsonSerializable
      *
      * @return Line
      */
-    public function setCategory($category)
+    public function setCategory(string $category): Line
     {
         $this->category = $category;
 

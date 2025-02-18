@@ -146,7 +146,7 @@ class OrderData implements JsonSerializable
     /**
      * @param Amount $amount
      */
-    public function setAmount($amount)
+    public function setAmount(Amount $amount)
     {
         $this->amount = $amount;
     }
@@ -186,7 +186,7 @@ class OrderData implements JsonSerializable
     /**
      * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -194,7 +194,7 @@ class OrderData implements JsonSerializable
     /**
      * @param string $method
      */
-    public function setMethod($method)
+    public function setMethod(string $method)
     {
         $this->method = $method;
     }
@@ -202,7 +202,7 @@ class OrderData implements JsonSerializable
     /**
      * @return array
      */
-    public function getMetadata()
+    public function getMetadata(): array
     {
         return $this->metadata;
     }
@@ -210,7 +210,7 @@ class OrderData implements JsonSerializable
     /**
      * @param array $metadata
      */
-    public function setMetadata($metadata)
+    public function setMetadata(array $metadata)
     {
         $this->metadata = $metadata;
     }
@@ -218,7 +218,7 @@ class OrderData implements JsonSerializable
     /**
      * @return string
      */
-    public function getLocale()
+    public function getLocale(): string
     {
         return $this->locale;
     }
@@ -226,7 +226,7 @@ class OrderData implements JsonSerializable
     /**
      * @param string $locale
      */
-    public function setLocale($locale)
+    public function setLocale(string $locale)
     {
         $this->locale = $locale;
     }
@@ -234,7 +234,7 @@ class OrderData implements JsonSerializable
     /**
      * @return string
      */
-    public function getCustomerId()
+    public function getCustomerId(): string
     {
         return $this->customerId;
     }
@@ -242,7 +242,7 @@ class OrderData implements JsonSerializable
     /**
      * @param string $customerId
      */
-    public function setCustomerId($customerId)
+    public function setCustomerId(string $customerId)
     {
         $this->customerId = $customerId;
     }
@@ -250,7 +250,7 @@ class OrderData implements JsonSerializable
     /**
      * @return Address
      */
-    public function getBillingAddress()
+    public function getBillingAddress(): Address
     {
         return $this->billingAddress;
     }
@@ -258,7 +258,7 @@ class OrderData implements JsonSerializable
     /**
      * @param Address $billingAddress
      */
-    public function setBillingAddress($billingAddress)
+    public function setBillingAddress(Address $billingAddress)
     {
         $this->billingAddress = $billingAddress;
     }
@@ -284,7 +284,7 @@ class OrderData implements JsonSerializable
      *
      * @return self
      */
-    public function setBillingPhoneNumber($billingPhoneNumber)
+    public function setBillingPhoneNumber($billingPhoneNumber): OrderData
     {
         $this->billingPhoneNumber = $billingPhoneNumber;
 
@@ -304,7 +304,7 @@ class OrderData implements JsonSerializable
      *
      * @return self
      */
-    public function setDeliveryPhoneNumber($deliveryPhoneNumber)
+    public function setDeliveryPhoneNumber($deliveryPhoneNumber): OrderData
     {
         $this->deliveryPhoneNumber = $deliveryPhoneNumber;
 
@@ -314,7 +314,7 @@ class OrderData implements JsonSerializable
     /**
      * @param Address $shippingAddress
      */
-    public function setShippingAddress($shippingAddress)
+    public function setShippingAddress(Address $shippingAddress)
     {
         $this->shippingAddress = $shippingAddress;
     }
@@ -322,7 +322,7 @@ class OrderData implements JsonSerializable
     /**
      * @return string
      */
-    public function getOrderNumber()
+    public function getOrderNumber(): string
     {
         return $this->orderNumber;
     }
@@ -330,7 +330,7 @@ class OrderData implements JsonSerializable
     /**
      * @param string $orderNumber
      */
-    public function setOrderNumber($orderNumber)
+    public function setOrderNumber(string $orderNumber)
     {
         $this->orderNumber = $orderNumber;
     }
@@ -338,7 +338,7 @@ class OrderData implements JsonSerializable
     /**
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -346,7 +346,7 @@ class OrderData implements JsonSerializable
     /**
      * @param string $email
      */
-    public function setEmail($email)
+    public function setEmail(string $email)
     {
         $this->email = $email;
     }
@@ -354,7 +354,7 @@ class OrderData implements JsonSerializable
     /**
      * @return Line[]
      */
-    public function getLines()
+    public function getLines(): array
     {
         return $this->lines;
     }
@@ -362,7 +362,7 @@ class OrderData implements JsonSerializable
     /**
      * @param Line[] $lines
      */
-    public function setLines($lines)
+    public function setLines(array $lines)
     {
         $this->lines = $lines;
     }

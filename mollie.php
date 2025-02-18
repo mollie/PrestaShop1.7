@@ -41,6 +41,7 @@ use Mollie\Subscription\Repository\RecurringOrderRepositoryInterface;
 use Mollie\Subscription\Validator\CanProductBeAddedToCartValidator;
 use Mollie\Utility\ExceptionUtility;
 use Mollie\Utility\PsVersionUtility;
+use Mollie\Utility\VersionUtility;
 use Mollie\Verification\IsPaymentInformationAvailable;
 use PrestaShop\PrestaShop\Core\Localization\Locale\Repository;
 use Symfony\Component\Dotenv\Dotenv;
@@ -546,7 +547,7 @@ class Mollie extends PaymentModule
      */
     public function hookPaymentOptions($params)
     {
-        if (version_compare(_PS_VERSION_, '1.7.0.0', '<')) {
+        if (VersionUtility::isPsVersionLessThan('1.7.0.0')) {
             return [];
         }
 
@@ -566,21 +567,16 @@ class Mollie extends PaymentModule
 
         $methods = $paymentMethodService->getMethodsForCheckout();
 
-        foreach ($methods as $method) {
-            /** @var MolPaymentMethod|null $paymentMethod */
-            $paymentMethod = $paymentMethodRepository->findOneBy(['id_payment_method' => (int) $method['id_payment_method']]);
+        $availableMethods = $paymentMethodRepository->findAllBy(['id_payment_method' => array_column($methods, 'id_payment_method')]);
 
-            if (!$paymentMethod) {
+        foreach ($availableMethods as $method) {
+            if (!$method) {
                 continue;
             }
 
-            $paymentMethod->method_name = $method['method_name'];
-
             try {
-                $paymentOptions[] = $paymentOptionsHandler->handle($paymentMethod);
+                $paymentOptions[] = $paymentOptionsHandler->handle($method);
             } catch (Exception $exception) {
-                // TODO handle payment fee exception and other exceptions with custom exception throw
-
                 $logger->error(sprintf('%s - Error while handling payment options', self::FILE_NAME), [
                     'exceptions' => ExceptionUtility::getExceptions($exception),
                 ]);

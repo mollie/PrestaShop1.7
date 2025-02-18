@@ -208,16 +208,17 @@ class PaymentMethodService
      */
     public function getMethodsForCheckout()
     {
-        $apiKey = EnvironmentUtility::getApiKey();
-        if (!$apiKey || $this->module->getApiClient() === null) {
+        if (!EnvironmentUtility::getApiKey()
+            || $this->module->getApiClient() === null
+            || !Configuration::get(Config::MOLLIE_STATUS_AWAITING)
+        ) {
             return [];
         }
-        /* @phpstan-ignore-next-line */
-        if (false === Configuration::get(Config::MOLLIE_STATUS_AWAITING)) {
-            return [];
-        }
-        $apiEnvironment = Configuration::get(Config::MOLLIE_ENVIRONMENT);
-        $methods = $this->methodRepository->getMethodsForCheckout($apiEnvironment, $this->shop->getShop()->id) ?: [];
+
+        $methods = $this->methodRepository->getMethodsForCheckout(
+            Configuration::get(Config::MOLLIE_ENVIRONMENT),
+            $this->shop->getShop()->id
+        ) ?: [];
 
         $isSubscriptionOrder = $this->subscriptionOrder->validate($this->cartAdapter->getCart());
         $sequenceType = $isSubscriptionOrder ? SequenceType::SEQUENCETYPE_FIRST : null;
@@ -230,17 +231,22 @@ class PaymentMethodService
 
         $methods = $this->removeNotSupportedMethods($methods, $mollieMethods);
 
+        $paymentMethods = $this->methodRepository->findAllBy(['id_payment_method' => array_column($methods, 'id_payment_method')]);
+
         foreach ($methods as $index => $method) {
             /** @var MolPaymentMethod|null $paymentMethod */
-            $paymentMethod = $this->methodRepository->findOneBy(['id_payment_method' => (int) $method['id_payment_method']]);
+            $paymentMethod = $paymentMethods[$method['id_payment_method']] ?? null;
 
             if (!$paymentMethod || !$this->paymentMethodRestrictionValidation->isPaymentMethodValid($paymentMethod)) {
                 unset($methods[$index]);
+
                 continue;
             }
 
             $image = json_decode($method['images_json'], true);
+
             $methods[$index]['image'] = $image;
+
             if (CustomLogoUtility::isCustomLogoEnabled($method['id_method'])) {
                 if ($this->creditCardLogoProvider->logoExists()) {
                     $methods[$index]['image']['custom_logo'] = $this->creditCardLogoProvider->getLogoPathUri();
@@ -248,9 +254,7 @@ class PaymentMethodService
             }
         }
 
-        $methods = $this->paymentMethodSortProvider->getSortedInAscendingWayForCheckout($methods);
-
-        return $methods;
+        return $this->paymentMethodSortProvider->getSortedInAscendingWayForCheckout($methods);
     }
 
     /**

@@ -37,7 +37,7 @@ class Amount
     /**
      * @return string
      */
-    public function getCurrency()
+    public function getCurrency(): string
     {
         return $this->currency;
     }
@@ -45,7 +45,7 @@ class Amount
     /**
      * @param string $currency
      */
-    public function setCurrency($currency)
+    public function setCurrency(string $currency)
     {
         $this->currency = $currency;
     }
@@ -53,7 +53,7 @@ class Amount
     /**
      * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return number_format($this->value, 2, '.', '');
     }
@@ -61,7 +61,7 @@ class Amount
     /**
      * @param float $value
      */
-    public function setValue($value)
+    public function setValue(float $value)
     {
         $this->value = $value;
     }
