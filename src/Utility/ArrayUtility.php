@@ -22,4 +22,21 @@ class ArrayUtility
     {
         return end($array);
     }
+
+    /**
+     * @param array $lines
+     *
+     * @return array
+     */
+    public function ungroupLines(array $lines): array
+    {
+        $newItems = [];
+        foreach ($lines as &$items) {
+            foreach ($items as &$item) {
+                $newItems[] = $item;
+            }
+        }
+
+        return $newItems;
+    }
 }

@@ -35,6 +35,7 @@ use Mollie\DTO\Object\Payment;
 use Mollie\DTO\OrderData;
 use Mollie\DTO\PaymentData;
 use Mollie\Exception\OrderCreationException;
+use Mollie\Logger\LoggerInterface;
 use Mollie\Provider\CreditCardLogoProvider;
 use Mollie\Provider\OrderTotal\OrderTotalProviderInterface;
 use Mollie\Provider\PaymentFeeProviderInterface;
@@ -47,6 +48,7 @@ use Mollie\Service\PaymentMethod\PaymentMethodSortProviderInterface;
 use Mollie\Subscription\Validator\SubscriptionOrderValidator;
 use Mollie\Utility\CustomLogoUtility;
 use Mollie\Utility\EnvironmentUtility;
+use Mollie\Utility\ExceptionUtility;
 use Mollie\Utility\HashUtility;
 use Mollie\Utility\LocaleUtility;
 use Mollie\Utility\SecureKeyUtility;
@@ -62,6 +64,12 @@ if (!defined('_PS_VERSION_')) {
 
 class PaymentMethodService
 {
+    const FILE_NAME = 'PaymentMethodService';
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     /**
      * @var Mollie
      */
@@ -133,7 +141,8 @@ class PaymentMethodService
         PaymentFeeProviderInterface $paymentFeeProvider,
         Context $context,
         OrderTotalProviderInterface $orderTotalProvider,
-        PaymentMethodLangRepositoryInterface $paymentMethodLangRepository
+        PaymentMethodLangRepositoryInterface $paymentMethodLangRepository,
+        LoggerInterface $logger
     ) {
         $this->module = $module;
         $this->methodRepository = $methodRepository;
@@ -152,6 +161,7 @@ class PaymentMethodService
         $this->context = $context;
         $this->orderTotalProvider = $orderTotalProvider;
         $this->paymentMethodLangRepository = $paymentMethodLangRepository;
+        $this->logger = $logger;
     }
 
     public function savePaymentMethod($method)
@@ -433,17 +443,27 @@ class PaymentMethodService
 
             $currency = new Currency($cart->id_currency);
             $selectedVoucherCategory = Configuration::get(Config::MOLLIE_VOUCHER_CATEGORY);
-            $orderData->setLines(
-                $this->cartLinesService->getCartLines(
-                    $amount,
-                    $paymentFeeData,
-                    $currency->iso_code,
-                    $cart->getSummaryDetails(),
-                    $cart->getTotalShippingCost(null, true),
-                    $cart->getProducts(),
-                    (bool) Configuration::get('PS_GIFT_WRAPPING'),
-                    $selectedVoucherCategory
-                ));
+
+            try {
+                $orderData->setLines(
+                    $this->cartLinesService->getCartLines(
+                        $amount,
+                        $paymentFeeData,
+                        $currency->iso_code,
+                        $cart->getSummaryDetails(),
+                        $cart->getTotalShippingCost(null, true),
+                        $cart->getProducts(),
+                        (bool) Configuration::get('PS_GIFT_WRAPPING'),
+                        $selectedVoucherCategory
+                    )
+                );
+            } catch (\Exception $e) {
+                $this->logger->error(sprintf('%s - Unable to set order lines', self::FILE_NAME), [
+                    'exceptions' => ExceptionUtility::getExceptions($e),
+                ]);
+
+                return $orderData;
+            }
 
             $payment = new Payment();
 
