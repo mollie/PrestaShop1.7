@@ -36,7 +36,7 @@ jobs:
       DB_PASSWD: ${{ secrets.DB_PASSWD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.0.0
+        uses: actions/checkout@v4
       - run: wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
         shell: bash
       - run: unzip -qq -o ngrok-stable-linux-amd64.zip

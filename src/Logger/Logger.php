@@ -10,6 +10,8 @@
  * @codingStandardsIgnoreStart
  */
 
+declare(strict_types=1);
+
 namespace Mollie\Logger;
 
 use Mollie\Adapter\ConfigurationAdapter;
@@ -56,63 +58,76 @@ class Logger implements LoggerInterface
         $this->prestashopLoggerRepository = $prestashopLoggerRepository;
     }
 
-    public function emergency($message, array $context = [])
-    {
-        $this->log(
-            $this->configuration->getAsInteger(
-                'PS_LOGS_BY_EMAIL',
-                $this->context->getShopId()
-            ),
-            $message,
-            $context
-        );
-    }
-
-    public function alert($message, array $context = [])
-    {
-        $this->log(self::SEVERITY_WARNING, $message, $context);
-    }
-
-    public function critical($message, array $context = [])
-    {
-        $this->log(
-            $this->configuration->getAsInteger(
-                'PS_LOGS_BY_EMAIL',
-                $this->context->getShopId()
-            ),
-            $message,
-            $context
-        );
-    }
-
-    public function error($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     */
+    public function emergency($message, array $context = []): void
     {
         $this->log(self::SEVERITY_ERROR, $message, $context);
     }
 
-    public function warning($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     */
+    public function alert($message, array $context = []): void
     {
         $this->log(self::SEVERITY_WARNING, $message, $context);
     }
 
-    public function notice($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     */
+    public function critical($message, array $context = []): void
+    {
+        $this->log(self::SEVERITY_ERROR, $message, $context);
+    }
+
+    /**
+     * @param string|\Stringable $message
+     */
+    public function error($message, array $context = []): void
+    {
+        $this->log(self::SEVERITY_ERROR, $message, $context);
+    }
+
+    /**
+     * @param string|\Stringable $message
+     */
+    public function warning($message, array $context = []): void
+    {
+        $this->log(self::SEVERITY_WARNING, $message, $context);
+    }
+
+    /**
+     * @param string|\Stringable $message
+     */
+    public function notice($message, array $context = []): void
     {
         $this->log(self::SEVERITY_INFO, $message, $context);
     }
 
-    public function info($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     */
+    public function info($message, array $context = []): void
     {
         $this->log(self::SEVERITY_INFO, $message, $context);
     }
 
-    public function debug($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     */
+    public function debug($message, array $context = []): void
     {
         if ((int) $this->configuration->get(Config::MOLLIE_DEBUG_LOG) === Config::DEBUG_LOG_ALL) {
             $this->log(self::SEVERITY_INFO, $message, $context);
         }
     }
 
-    public function log($level, $message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     */
+    public function log($level, $message, array $context = []): void
     {
         $idempotencyKey = $this->idempotencyProvider->getIdempotencyKey();
 
@@ -136,7 +151,15 @@ class Logger implements LoggerInterface
         $this->logContext($logId, $context);
     }
 
-    private function logContext($logId, array $context)
+    /**
+     * @param int $logId
+     * @param array $context
+     *
+     * @return void
+     *
+     * @throws \PrestaShopException
+     */
+    private function logContext($logId, array $context = []): void
     {
         $request = '';
         $response = '';
@@ -162,7 +185,12 @@ class Logger implements LoggerInterface
         $this->entityManager->flush();
     }
 
-    private function getFilledContextWithShopData(array $context = [])
+    /**
+     * @param array $context
+     *
+     * @return array
+     */
+    private function getFilledContextWithShopData(array $context = []): array
     {
         $context['context_id_customer'] = $this->context->getCustomerId();
         $context['id_shop'] = $this->context->getShopId();

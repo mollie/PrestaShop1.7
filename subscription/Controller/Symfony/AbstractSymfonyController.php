@@ -30,8 +30,6 @@ abstract class AbstractSymfonyController extends FrameworkBundleAdminController
 
     public function __construct()
     {
-        parent::__construct();
-
         /* @phpstan-ignore-next-line */
         $this->module = Module::getInstanceByName('mollie');
     }

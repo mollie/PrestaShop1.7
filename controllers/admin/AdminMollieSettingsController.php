@@ -174,8 +174,8 @@ class AdminMollieSettingsController extends ModuleAdminController
 
         Media::addJsDef([
             'description_message' => addslashes($this->module->l('Enter a description')),
-            'min_amount_message' => addslashes($this->l('You have entered incorrect min amount')),
-            'max_amount_message' => addslashes($this->l('You have entered incorrect max amount')),
+            'min_amount_message' => addslashes($this->module->l('You have entered incorrect min amount')),
+            'max_amount_message' => addslashes($this->module->l('You have entered incorrect max amount')),
 
             'payment_api' => addslashes(Mollie\Config\Config::MOLLIE_PAYMENTS_API),
             'ajaxUrl' => addslashes($this->context->link->getAdminLink('AdminMollieAjax')),

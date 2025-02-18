@@ -15,7 +15,9 @@ declare(strict_types=1);
 namespace Mollie\Subscription\Controller\Symfony;
 
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -25,6 +27,22 @@ class SubscriptionFAQController extends AbstractSymfonyController
 {
     private const FILE_NAME = 'SubscriptionFAQController';
 
+    /** @var ?ContainerInterface */
+    protected $container;
+
+    /** @var ?Environment */
+    private $twig;
+
+    public function __construct(
+        ?ContainerInterface $container = null,
+        ?Environment $twig = null
+    ) {
+        $this->container = $container;
+        $this->twig = $twig;
+
+        parent::__construct();
+    }
+
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
      *
@@ -32,7 +50,20 @@ class SubscriptionFAQController extends AbstractSymfonyController
      */
     public function indexAction()
     {
-        return $this->render('@Modules/mollie/views/templates/admin/Subscription/subscriptions-faq.html.twig', [
+        if (!$this->twig) {
+            return new Response(
+                $this->render('@Modules/mollie/views/templates/admin/Subscription/subscriptions-faq.html.twig', $this->getFAQTexts())
+            );
+        }
+
+        return new Response(
+            $this->twig->render('@Modules/mollie/views/templates/admin/Subscription/subscriptions-faq.html.twig', $this->getFAQTexts())
+        );
+    }
+
+    private function getFAQTexts(): array
+    {
+        return [
             'subscriptionCreationTittle' => $this->module->l('Subscription creation', self::FILE_NAME),
             'subscriptionCreation' => $this->module->l('To create a subscription option for a product variation, assign it a Mollie subscription attribute.', self::FILE_NAME),
             'importantInformationTittle' => $this->module->l('IMPORTANT points', self::FILE_NAME),
@@ -50,6 +81,6 @@ class SubscriptionFAQController extends AbstractSymfonyController
             'recurringOrderCreation' => $this->module->l('Mollie for Prestashop automatically creates a new order when the previous order is paid for.', self::FILE_NAME),
             'recurringOrderPrice' => $this->module->l('Recurring orders always use the product price that was specified when the related subscription was created.', self::FILE_NAME),
             'recurringOrderAPIChanges' => $this->module->l('Recurring order will override the “Method” payment setting and will be using Mollie’s Payment API.', self::FILE_NAME),
-        ]);
+        ];
     }
 }

@@ -82,7 +82,7 @@ class MollieBancontactAjaxModuleFrontController extends ModuleFrontController
         );
         $newPayment = $this->module->getApiClient()->payments->create($paymentData->jsonSerialize(), ['include' => 'details.qrCode']);
 
-        $this->ajaxDie(json_encode(
+        $this->ajaxRender(json_encode(
             [
                 'qr_code' => $newPayment->details->qrCode->src,
             ]
@@ -96,7 +96,7 @@ class MollieBancontactAjaxModuleFrontController extends ModuleFrontController
         $cart = Context::getContext()->cart;
 
         $proc = function () use ($cart) {
-            $orderId = Order::getOrderByCartId($cart->id);
+            $orderId = Order::getIdByCartId($cart->id);
             /* @phpstan-ignore-next-line */
             if (!$orderId) {
                 throw new OrderCreationException('Order was not created in webhook', OrderCreationException::ORDER_IS_NOT_CREATED);
@@ -115,7 +115,7 @@ class MollieBancontactAjaxModuleFrontController extends ModuleFrontController
                 ]
             );
         } catch (RetryOverException $e) {
-            $this->ajaxDie(json_encode(
+            $this->ajaxRender(json_encode(
                 [
                     'success' => false,
                 ]
@@ -123,7 +123,7 @@ class MollieBancontactAjaxModuleFrontController extends ModuleFrontController
         }
 
         if (!$orderId) {
-            $this->ajaxDie(json_encode(
+            $this->ajaxRender(json_encode(
                 [
                     'success' => false,
                 ]
@@ -143,7 +143,7 @@ class MollieBancontactAjaxModuleFrontController extends ModuleFrontController
         );
         OrderRecoverUtility::recoverCreatedOrder($this->context, $cart->id_customer);
 
-        $this->ajaxDie(json_encode(
+        $this->ajaxRender(json_encode(
             [
                 'success' => true,
                 'redirectUrl' => $successUrl,

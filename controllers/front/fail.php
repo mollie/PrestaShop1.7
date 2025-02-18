@@ -68,7 +68,7 @@ class MollieFailModuleFrontController extends ModuleFrontController
 
         $redirectLink = 'index.php?controller=history';
 
-        $orderId = (int) Order::getOrderByCartId((int) $this->id_cart); /* @phpstan-ignore-line */
+        $orderId = (int) Order::getIdByCartId((int) $this->id_cart); /* @phpstan-ignore-line */
 
         $this->id_order = $orderId;
         $this->secure_key = Tools::getValue('secureKey');

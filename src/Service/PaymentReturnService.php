@@ -148,7 +148,7 @@ class PaymentReturnService
     private function getStatusResponse($transaction, $status, $cartId, $cartSecureKey)
     {
         /* @phpstan-ignore-next-line */
-        $orderId = (int) Order::getOrderByCartId((int) $cartId);
+        $orderId = (int) Order::getIdByCartId((int) $cartId);
 
         $successUrl = $this->context->link->getPageLink(
             'order-confirmation',

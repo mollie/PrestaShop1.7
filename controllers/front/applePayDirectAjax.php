@@ -79,7 +79,7 @@ class MollieApplePayDirectAjaxModuleFrontController extends ModuleFrontControlle
         );
         $response = $handler->handle($command);
 
-        $this->ajaxDie(json_encode($response));
+        $this->ajaxRender(json_encode($response));
     }
 
     private function updateShippingMethod()
@@ -94,7 +94,7 @@ class MollieApplePayDirectAjaxModuleFrontController extends ModuleFrontControlle
         );
         $response = $handler->handle($command);
 
-        $this->ajaxDie(json_encode($response));
+        $this->ajaxRender(json_encode($response));
     }
 
     private function updateAppleShippingContact()
@@ -142,7 +142,7 @@ class MollieApplePayDirectAjaxModuleFrontController extends ModuleFrontControlle
             ];
         }
 
-        $this->ajaxDie(json_encode($result));
+        $this->ajaxRender(json_encode($result));
     }
 
     private function createApplePayOrder()
@@ -167,13 +167,13 @@ class MollieApplePayDirectAjaxModuleFrontController extends ModuleFrontControlle
         );
         $response = $handler->handle($command);
         if (!$response['success']) {
-            $this->ajaxDie(json_encode($response));
+            $this->ajaxRender(json_encode($response));
         }
 
         //we need to recover created order with customer settings so that we can show order confirmation page
         OrderRecoverUtility::recoverCreatedOrder($this->context, $cart->id_customer);
 
-        $this->ajaxDie(json_encode($response));
+        $this->ajaxRender(json_encode($response));
     }
 
     private function getTotalApplePayCartPrice()
@@ -181,7 +181,7 @@ class MollieApplePayDirectAjaxModuleFrontController extends ModuleFrontControlle
         $cartId = Tools::getValue('cartId');
         $cart = new Cart($cartId);
 
-        $this->ajaxDie(json_encode(
+        $this->ajaxRender(json_encode(
             [
                 'total' => $cart->getOrderTotal(),
             ]

@@ -27,9 +27,7 @@ class CreateOrderPaymentFeeAction
 {
     const FILE_NAME = 'CreateOrderPaymentFeeAction';
 
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private $logger;
 
     public function __construct(LoggerInterface $logger)

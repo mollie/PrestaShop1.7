@@ -17,7 +17,7 @@ jobs:
             ModuleUpgradeTest: 'make VERSION=1785 upgrading-module-test-1785'
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4
 
       - name: Install composer
         run: composer update

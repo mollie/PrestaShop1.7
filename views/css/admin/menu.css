@@ -10,8 +10,9 @@
  */
 
 #subtab-AdminMollieModule_MTR > a > i.mi-mollie{
-    background: url('../../img/mollie.png') no-repeat scroll center center / contain transparent;
+    background: url('../../img/logo_small.png') no-repeat scroll center center / contain transparent;
     width: 16px;
+    color: transparent;
 }
 
 #maintab-AdminMollieModule > a > i:before,

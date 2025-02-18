@@ -18,6 +18,9 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+/**
+ * @deprecated use LoggerInterface instead
+ */
 interface PrestaLoggerInterface extends LoggerInterface
 {
 }

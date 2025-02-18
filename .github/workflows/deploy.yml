@@ -9,7 +9,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
             - name: build
                 # IF YOU EDIT THIS, DON'T FORGET TO EDIT release.yml
               run: |
@@ -32,7 +32,7 @@ jobs:
                   find . -maxdepth 1 -type f -exec rm "{}" \;
                   cd mollie && rm -rf mollie
             - name: Archive production artifacts
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: mollie
                   path: |

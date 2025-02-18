@@ -32,6 +32,9 @@ class AdminMollieAjaxController extends ModuleAdminController
     public function postProcess()
     {
         $action = Tools::getValue('action');
+
+        $this->context->smarty->assign('bootstrap', true);
+
         switch ($action) {
             case 'togglePaymentMethod':
                 $this->togglePaymentMethod();
@@ -80,7 +83,7 @@ class AdminMollieAjaxController extends ModuleAdminController
         }
         $method->update();
 
-        $this->ajaxDie(json_encode(
+        $this->ajaxRender(json_encode(
             [
                 'success' => true,
                 'paymentStatus' => (int) $method->enabled,
@@ -100,7 +103,7 @@ class AdminMollieAjaxController extends ModuleAdminController
 
         $response = $molliePaymentMailService->sendSecondChanceMail($orderId);
 
-        $this->ajaxDie(json_encode($response));
+        $this->ajaxRender(json_encode($response));
     }
 
     /**
@@ -119,7 +122,7 @@ class AdminMollieAjaxController extends ModuleAdminController
         $apiKeysTestInfo = $apiTestFeedbackBuilder->buildParams();
 
         $this->context->smarty->assign($apiKeysTestInfo);
-        $this->ajaxDie(json_encode(
+        $this->ajaxRender(json_encode(
             [
                 'template' => $this->context->smarty->fetch($this->module->getLocalPath() . 'views/templates/admin/api_test_results.tpl'),
             ]
@@ -141,7 +144,7 @@ class AdminMollieAjaxController extends ModuleAdminController
         $returnText = '';
         // Check image format
         if ('jpg' !== $imageFileType && 'png' !== $imageFileType) {
-            $returnText = $this->l('Upload a .jpg or .png file.');
+            $returnText = $this->module->l('Upload a .jpg or .png file.');
             $isUploaded = 0;
         }
 
@@ -151,7 +154,7 @@ class AdminMollieAjaxController extends ModuleAdminController
                 $returnText = basename($_FILES['fileToUpload']['name']);
             } else {
                 $isUploaded = 0;
-                $returnText = $this->l('Something went wrong when uploading your logo.');
+                $returnText = $this->module->l('Something went wrong when uploading your logo.');
             }
         }
 

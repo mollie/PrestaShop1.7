@@ -28,9 +28,11 @@ use Mollie\Utility\PsVersionUtility;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
 use PrestaShop\PrestaShop\Core\Grid\GridFactoryInterface;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -39,6 +41,22 @@ if (!defined('_PS_VERSION_')) {
 class SubscriptionController extends AbstractSymfonyController
 {
     private const FILE_NAME = 'SubscriptionController';
+
+    /** @var ?ContainerInterface */
+    protected $container;
+
+    /** @var ?Environment */
+    public $twig;
+
+    public function __construct(
+        ?ContainerInterface $container = null,
+        ?Environment $twig = null
+    ) {
+        $this->container = $container;
+        $this->twig = $twig;
+
+        parent::__construct();
+    }
 
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
@@ -68,11 +86,13 @@ class SubscriptionController extends AbstractSymfonyController
             $formHandler = $this->get('subscription_options_form_handler_deprecated')->getForm();
         }
 
-        return $this->render('@Modules/mollie/views/templates/admin/Subscription/subscriptions-grid.html.twig', [
-            'currencyGrid' => $this->presentGrid($currencyGrid),
-            'enableSidebar' => true,
-            'subscriptionOptionsForm' => $formHandler->createView(),
-        ]);
+        return new Response(
+            $this->renderTwig('@Modules/mollie/views/templates/admin/Subscription/subscriptions-grid.html.twig', [
+                'currencyGrid' => $this->presentGrid($currencyGrid),
+                'enableSidebar' => true,
+                'subscriptionOptionsForm' => $formHandler->createView(),
+            ])
+        );
     }
 
     /**
@@ -100,7 +120,10 @@ class SubscriptionController extends AbstractSymfonyController
             return $this->redirectToRoute('admin_subscription_index');
         }
 
-        $this->updateSubscriptionCarrier($form->getData()['carrier']);
+        // NOTE: By default getting was throwing silented error
+        $carrier = $form->getData()['carrier'] ?? $form->getData()['subscription_options']['carrier'];
+
+        $this->updateSubscriptionCarrier($carrier);
 
         $formHandler->save($form->getData());
 
@@ -192,5 +215,14 @@ class SubscriptionController extends AbstractSymfonyController
         }
 
         return $this->getErrorMessageForException($e, $errors);
+    }
+
+    private function renderTwig($name, $args)
+    {
+        if (!$this->twig) {
+            return $this->render($name, $args);
+        }
+
+        return $this->twig->render($name, $args);
     }
 }

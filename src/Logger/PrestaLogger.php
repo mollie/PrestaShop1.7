@@ -10,6 +10,8 @@
  * @codingStandardsIgnoreStart
  */
 
+declare(strict_types=1);
+
 namespace Mollie\Logger;
 
 use Mollie\Adapter\ConfigurationAdapter;
@@ -20,11 +22,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+/**
+ * @deprecated use LoggerInterface instead
+ */
 class PrestaLogger implements PrestaLoggerInterface
 {
-    // TODO move this as a shared service for subscriptions and main source
-    // TODO refactor whole logger logic and implement leftover methods
-
     /** @var ConfigurationAdapter */
     private $configuration;
 
@@ -33,22 +35,42 @@ class PrestaLogger implements PrestaLoggerInterface
         $this->configuration = $configuration;
     }
 
-    public function emergency($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    public function emergency($message, array $context = []): void
     {
-        throw new NotImplementedException('not implemented method');
+        $this->logWithPrestaShop('emergency', $message, $context);
     }
 
-    public function alert($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    public function alert($message, array $context = []): void
     {
-        throw new NotImplementedException('not implemented method');
+        $this->logWithPrestaShop('alert', $message, $context);
     }
 
-    public function critical($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    public function critical($message, array $context = []): void
     {
-        throw new NotImplementedException('not implemented method');
+        $this->logWithPrestaShop('critical', $message, $context);
     }
 
-    public function error($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    public function error($message, array $context = []): void
     {
         if ((int) $this->configuration->get(Config::MOLLIE_DEBUG_LOG) === Config::DEBUG_LOG_NONE) {
             return;
@@ -62,17 +84,32 @@ class PrestaLogger implements PrestaLoggerInterface
         );
     }
 
-    public function warning($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    public function warning($message, array $context = []): void
     {
-        throw new NotImplementedException('not implemented method');
+        $this->logWithPrestaShop('warning', $message, $context);
     }
 
-    public function notice($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    public function notice($message, array $context = []): void
     {
-        throw new NotImplementedException('not implemented method');
+        $this->logWithPrestaShop('notice', $message, $context);
     }
 
-    public function info($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    public function info($message, array $context = []): void
     {
         if ((int) $this->configuration->get(Config::MOLLIE_DEBUG_LOG) !== Config::DEBUG_LOG_ALL) {
             return;
@@ -85,22 +122,42 @@ class PrestaLogger implements PrestaLoggerInterface
         );
     }
 
-    public function debug($message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    public function debug($message, array $context = []): void
     {
-        // TODO implement single method, which handles logging
-
         $this->info($message, $context);
     }
 
-    public function log($level, $message, array $context = [])
+    /**
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    public function log($level, $message, array $context = []): void
     {
         throw new NotImplementedException('not implemented method');
     }
 
-    private function getMessageWithContext($message, array $context = [])
+    private function getMessageWithContext(string $message, array $context = []): string
     {
         $content = json_encode($context);
 
         return "{$message} . context: {$content}";
+    }
+
+    /**
+     * Handle logging logic with PrestaShopLogger.
+     *
+     * @param string|\Stringable $message
+     *
+     * @deprecated use LoggerInterface instead
+     */
+    private function logWithPrestaShop(string $level, $message, array $context): void
+    {
+        throw new NotImplementedException("Method {$level} not implemented.");
     }
 }

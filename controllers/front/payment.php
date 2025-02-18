@@ -166,7 +166,7 @@ class MolliePaymentModuleFrontController extends ModuleFrontController
 
         try {
             if ($method === PaymentMethod::BANKTRANSFER) {
-                $orderId = Order::getOrderByCartId($cart->id);
+                $orderId = Order::getIdByCartId($cart->id);
                 $order = new Order($orderId);
                 $paymentMethodRepository->addOpenStatusPayment(
                     $cart->id,

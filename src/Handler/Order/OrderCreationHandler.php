@@ -144,7 +144,7 @@ class OrderCreationHandler
 
         $paymentFeeData = $this->paymentFeeProvider->getPaymentFee($paymentMethod, (float) $originalAmount);
 
-        if (Order::getOrderByCartId((int) $cartId)) {
+        if (Order::getIdByCartId((int) $cartId)) {
             return 0;
         }
 
@@ -162,7 +162,7 @@ class OrderCreationHandler
             );
 
             /* @phpstan-ignore-next-line */
-            $orderId = (int) Order::getOrderByCartId((int) $cartId);
+            $orderId = (int) Order::getIdByCartId((int) $cartId);
 
             $this->createRecurringOrderEntity(new Order($orderId), $paymentMethod->id_method);
 
@@ -209,7 +209,7 @@ class OrderCreationHandler
         );
 
         /* @phpstan-ignore-next-line */
-        $orderId = (int) Order::getOrderByCartId((int) $cartId);
+        $orderId = (int) Order::getIdByCartId((int) $cartId);
 
         $this->orderPaymentFeeHandler->addOrderPaymentFee($orderId, $apiPayment);
 
@@ -241,7 +241,7 @@ class OrderCreationHandler
             $cart->secure_key
         );
 
-        $orderId = Order::getOrderByCartId($cart->id);
+        $orderId = Order::getIdByCartId($cart->id);
         $order = new Order($orderId);
 
         $environment = (int) Configuration::get(Mollie\Config\Config::MOLLIE_ENVIRONMENT);
